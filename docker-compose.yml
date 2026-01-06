@@ -16,7 +16,7 @@ services:
       - "5432:5432"
 
   backend:
-    build: 
+    build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
@@ -34,7 +34,7 @@ services:
       - "8080:8080"
 
   frontend:
-    build: 
+    build:
       context: ./from
       dockerfile: Dockerfile
     container_name: frontend
@@ -42,6 +42,9 @@ services:
       - backend
     networks:
       - app-network
+    environment:
+      - PORT=80
+      - BACKEND_URL=http://backend:8080
     ports:
       - "8081:80"
 
