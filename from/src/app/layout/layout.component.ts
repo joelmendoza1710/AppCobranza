@@ -9,10 +9,24 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [CommonModule, RouterOutlet, RouterLink],
   template: `
-    <div class="flex h-screen bg-gray-50 dark:bg-gray-900 font-sans">
+    <div
+      class="flex h-screen bg-gray-50 dark:bg-gray-900 font-sans overflow-hidden"
+    >
+      <!-- Mobile Backdrop -->
+      <div
+        *ngIf="isMobileMenuOpen"
+        (click)="isMobileMenuOpen = false"
+        class="fixed inset-0 bg-black/50 z-30 md:hidden glass-effect"
+      ></div>
+
       <!-- Sidebar -->
       <aside
-        class="w-64 bg-slate-900 text-white shadow-2xl hidden md:flex flex-col transition-all duration-300"
+        class="absolute md:relative inset-y-0 left-0 z-40 w-64 bg-slate-900 text-white shadow-2xl flex flex-col transition-transform duration-300 ease-in-out transform"
+        [ngClass]="{
+          '-translate-x-full': !isMobileMenuOpen,
+          'translate-x-0': isMobileMenuOpen,
+          'md:translate-x-0': true
+        }"
       >
         <!-- Logo Area -->
         <div class="p-6 border-b border-white/10 flex items-center space-x-3">
@@ -22,6 +36,25 @@ import { Router } from '@angular/router';
             <span class="font-bold text-white text-lg">C</span>
           </div>
           <h1 class="text-xl font-bold tracking-wide">Cobranzas</h1>
+          <!-- Close Button Mobile -->
+          <button
+            class="md:hidden ml-auto text-gray-400 hover:text-white"
+            (click)="isMobileMenuOpen = false"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
         </div>
 
         <!-- Navigation -->
@@ -29,6 +62,7 @@ import { Router } from '@angular/router';
           <a
             routerLink="/dashboard"
             routerLinkActive="bg-white/10 text-white shadow-md backdrop-blur-sm border-l-4 border-blue-400"
+            (click)="isMobileMenuOpen = false"
             class="flex items-center px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white rounded-r-lg transition-all duration-200 group"
           >
             <!-- Icon Placeholder (Box) -->
@@ -55,6 +89,7 @@ import { Router } from '@angular/router';
           <a
             routerLink="/clients"
             routerLinkActive="bg-white/10 text-white shadow-md backdrop-blur-sm border-l-4 border-purple-400"
+            (click)="isMobileMenuOpen = false"
             class="flex items-center px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white rounded-r-lg transition-all duration-200 group"
           >
             <span
@@ -80,6 +115,7 @@ import { Router } from '@angular/router';
           <a
             routerLink="/loans"
             routerLinkActive="bg-white/10 text-white shadow-md backdrop-blur-sm border-l-4 border-emerald-400"
+            (click)="isMobileMenuOpen = false"
             class="flex items-center px-4 py-3 text-gray-400 hover:bg-white/5 hover:text-white rounded-r-lg transition-all duration-200 group"
           >
             <span
@@ -133,11 +169,28 @@ import { Router } from '@angular/router';
       >
         <!-- Header Mobile (Visible only on small screens) -->
         <div
-          class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md"
+          class="md:hidden bg-slate-900 text-white p-4 flex justify-between items-center shadow-md sticky top-0 z-20"
         >
           <span class="font-bold">Cobranzas</span>
-          <!-- Simple Menu Button Placeholder -->
-          <button class="text-white">☰</button>
+          <!-- Simple Menu Button -->
+          <button
+            (click)="isMobileMenuOpen = !isMobileMenuOpen"
+            class="text-white hover:text-gray-300 focus:outline-none p-2"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
         </div>
 
         <div class="container mx-auto px-6 py-8">
@@ -148,6 +201,8 @@ import { Router } from '@angular/router';
   `,
 })
 export class LayoutComponent {
+  isMobileMenuOpen = false;
+
   constructor(private auth: AuthService, private router: Router) {}
 
   logout() {
