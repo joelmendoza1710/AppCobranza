@@ -23,11 +23,11 @@ import { FormsModule } from '@angular/forms';
           *ngFor="let item of paginatedRoute"
           class="group relative overflow-hidden rounded-2xl p-5 transition-all duration-300 hover:shadow-xl border"
           [ngClass]="{
-            'bg-white dark:bg-gray-800 border-gray-100 dark:border-gray-700':
+            'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700':
               item.statusToday === 'PENDING',
             'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800':
               item.statusToday === 'PAID',
-            'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60':
+            'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60':
               item.statusToday === 'SKIPPED'
           }"
         >
@@ -35,7 +35,7 @@ import { FormsModule } from '@angular/forms';
           <div
             class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300"
             [ngClass]="{
-              'bg-blue-500': item.statusToday === 'PENDING',
+              'bg-blue-600': item.statusToday === 'PENDING',
               'bg-emerald-500': item.statusToday === 'PAID',
               'bg-gray-400': item.statusToday === 'SKIPPED'
             }"
@@ -47,10 +47,10 @@ import { FormsModule } from '@angular/forms';
                 <span
                   class="inline-block text-[10px] font-bold uppercase tracking-wider py-0.5 px-2 rounded-full mb-1"
                   [ngClass]="{
-                    'bg-blue-100 text-blue-700': item.statusToday === 'PENDING',
+                    'bg-blue-100 text-blue-800': item.statusToday === 'PENDING',
                     'bg-emerald-100 text-emerald-700':
                       item.statusToday === 'PAID',
-                    'bg-gray-200 text-gray-600': item.statusToday === 'SKIPPED'
+                    'bg-gray-200 text-gray-700': item.statusToday === 'SKIPPED'
                   }"
                 >
                   {{
@@ -62,20 +62,20 @@ import { FormsModule } from '@angular/forms';
                   }}
                 </span>
                 <h3
-                  class="font-bold text-lg text-gray-800 dark:text-white leading-tight group-hover:text-blue-600 transition-colors"
+                  class="font-bold text-lg text-gray-900 dark:text-white leading-tight group-hover:text-blue-700 transition-colors"
                 >
                   {{ item.clientName }}
                 </h3>
               </div>
               <div
-                class="text-xs font-bold bg-gray-100 dark:bg-gray-700 text-gray-500 px-2 py-1 rounded-lg"
+                class="text-xs font-bold bg-white dark:bg-gray-700 text-gray-600 px-2 py-1 rounded-lg border border-gray-100 dark:border-gray-600"
               >
                 #{{ item.routeOrder }}
               </div>
             </div>
 
             <p
-              class="text-xs text-gray-500 dark:text-gray-400 mb-3 flex items-center"
+              class="text-xs text-gray-600 dark:text-gray-400 mb-3 flex items-center"
             >
               <svg
                 class="w-3 h-3 mr-1"
@@ -100,22 +100,22 @@ import { FormsModule } from '@angular/forms';
             </p>
 
             <div
-              class="flex justify-between items-center bg-gray-50 dark:bg-gray-700/50 p-2 rounded-lg mb-3"
+              class="flex justify-between items-center bg-white dark:bg-gray-700/50 p-2 rounded-lg mb-3 border border-gray-100 dark:border-gray-700"
             >
               <div class="text-center">
-                <span class="text-[10px] text-gray-400 uppercase font-semibold"
+                <span class="text-[10px] text-gray-500 uppercase font-semibold"
                   >Cuota</span
                 >
-                <p class="font-bold text-gray-700 dark:text-gray-200">
+                <p class="font-bold text-gray-800 dark:text-gray-200">
                   {{ item.installmentAmount | currency }}
                 </p>
               </div>
               <div class="h-6 w-px bg-gray-200 dark:bg-gray-600"></div>
               <div class="text-center">
-                <span class="text-[10px] text-gray-400 uppercase font-semibold"
+                <span class="text-[10px] text-gray-500 uppercase font-semibold"
                   >Saldo</span
                 >
-                <p class="font-bold text-rose-500">
+                <p class="font-bold text-rose-600">
                   {{ item.remainingBalance | currency }}
                 </p>
               </div>
@@ -131,7 +131,7 @@ import { FormsModule } from '@angular/forms';
               </button>
               <button
                 (click)="markSkipped(item)"
-                class="px-3 bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-300 transition-colors"
+                class="px-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-300 transition-colors"
               >
                 <svg
                   class="w-5 h-5"
