@@ -23,11 +23,11 @@ import { FormsModule } from '@angular/forms';
           *ngFor="let item of paginatedRoute"
           class="group relative overflow-hidden rounded-2xl p-5 transition-all duration-300 hover:shadow-xl border"
           [ngClass]="{
-            'bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700':
+            'bg-slate-100 dark:bg-gray-800 border-slate-200 dark:border-gray-700':
               item.statusToday === 'PENDING',
             'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800':
               item.statusToday === 'PAID',
-            'bg-gray-100 dark:bg-gray-800 border-gray-200 dark:border-gray-700 opacity-60':
+            'bg-gray-200 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-60':
               item.statusToday === 'SKIPPED'
           }"
         >
@@ -35,7 +35,7 @@ import { FormsModule } from '@angular/forms';
           <div
             class="absolute left-0 top-0 bottom-0 w-1.5 transition-colors duration-300"
             [ngClass]="{
-              'bg-blue-600': item.statusToday === 'PENDING',
+              'bg-slate-600': item.statusToday === 'PENDING',
               'bg-emerald-500': item.statusToday === 'PAID',
               'bg-gray-400': item.statusToday === 'SKIPPED'
             }"
@@ -47,10 +47,11 @@ import { FormsModule } from '@angular/forms';
                 <span
                   class="inline-block text-[10px] font-bold uppercase tracking-wider py-0.5 px-2 rounded-full mb-1"
                   [ngClass]="{
-                    'bg-blue-100 text-blue-800': item.statusToday === 'PENDING',
+                    'bg-slate-200 text-slate-800':
+                      item.statusToday === 'PENDING',
                     'bg-emerald-100 text-emerald-700':
                       item.statusToday === 'PAID',
-                    'bg-gray-200 text-gray-700': item.statusToday === 'SKIPPED'
+                    'bg-gray-300 text-gray-700': item.statusToday === 'SKIPPED'
                   }"
                 >
                   {{
@@ -62,7 +63,7 @@ import { FormsModule } from '@angular/forms';
                   }}
                 </span>
                 <h3
-                  class="font-bold text-lg text-gray-900 dark:text-white leading-tight group-hover:text-blue-700 transition-colors"
+                  class="font-extrabold text-xl text-black dark:text-white leading-tight group-hover:text-blue-800 transition-colors"
                 >
                   {{ item.clientName }}
                 </h3>
