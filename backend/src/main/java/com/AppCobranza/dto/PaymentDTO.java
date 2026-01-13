@@ -13,4 +13,5 @@ import java.math.BigDecimal;
 public class PaymentDTO {
     private Long loanId;
     private BigDecimal amount;
+    private String observation;
 }

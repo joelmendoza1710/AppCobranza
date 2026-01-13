@@ -13,30 +13,76 @@ const authGuard = () => {
   return router.parseUrl('/login');
 };
 
+const roleGuard = (requiredRole: string) => {
+  const storage = inject(StorageService);
+  const router = inject(Router);
+  const user = storage.getUser(); // Assuming getUser returns object with role
+
+  if (storage.isLoggedIn() && user?.role === requiredRole) {
+    return true;
+  }
+  // Redirect to appropriate dashboard or login
+  if (storage.isLoggedIn()) {
+    return user?.role === 'ADMIN'
+      ? router.parseUrl('/admin/dashboard')
+      : router.parseUrl('/cobrador/dashboard');
+  }
+  return router.parseUrl('/login');
+};
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   {
-    path: '',
+    path: 'admin',
     component: LayoutComponent,
-    canActivate: [authGuard],
+    canActivate: [() => roleGuard('ADMIN')],
     children: [
-      { path: 'dashboard', component: DashboardComponent },
       {
-        path: 'clients',
+        path: 'dashboard',
         loadComponent: () =>
-          import('./features/clients/client-list.component').then(
-            (m) => m.ClientListComponent
+          import('./features/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
           ),
       },
       {
-        path: 'loans',
+        path: 'rutas',
         loadComponent: () =>
-          import('./features/loans/loan-list.component').then(
-            (m) => m.LoanListComponent
+          import('./features/loans/route-list.component').then(
+            (m) => m.RouteListComponent
+          ),
+      },
+      // {
+      //   path: 'auditoria',
+      //   loadComponent: () =>
+      //     import('./features/audit/audit-list.component').then(
+      //       (m) => m.AuditListComponent
+      //     ),
+      // },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
+  {
+    path: 'cobrador',
+    component: LayoutComponent,
+    canActivate: [() => roleGuard('COBRADOR')],
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./features/dashboard/dashboard.component').then(
+            (m) => m.DashboardComponent
+          ), // Temporary reuse of main dashboard
+      },
+      {
+        path: 'ruta-diaria',
+        loadComponent: () =>
+          import('./features/loans/route-list.component').then(
+            (m) => m.RouteListComponent
           ),
       },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: '**', redirectTo: 'login' },
 ];

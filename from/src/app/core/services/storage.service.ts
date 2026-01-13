@@ -21,4 +21,17 @@ export class StorageService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
+  getUser(): any {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = token.split('.')[1];
+      const decoded = atob(payload);
+      return JSON.parse(decoded);
+    } catch (e) {
+      console.error('Error decoding token', e);
+      return null;
+    }
+  }
 }

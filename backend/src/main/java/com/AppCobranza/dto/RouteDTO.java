@@ -10,7 +10,7 @@ public class RouteDTO {
     private Long clientId;
     private String clientName;
     private String address;
-    private int routeOrder;
+    private Double routeOrder;
 
     // Status Logic
     private String statusToday; // PAID, SKIPPED, PENDING

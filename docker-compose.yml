@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   postgres-db:
@@ -47,6 +47,19 @@ services:
       - BACKEND_URL=http://backend:8080
     ports:
       - "8081:80"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "15050:80"
+    networks:
+      - app-network
+    depends_on:
+      - postgres-db
 
 networks:
   app-network:

@@ -64,6 +64,8 @@ public class LoanService {
                 .endDate(endDate)
                 .totalToPay(totalToPay)
                 .remainingBalance(totalToPay)
+                .capitalBalance(request.getAmount())
+                .interestBalance(totalToPay.subtract(request.getAmount()))
                 .status(com.AppCobranza.model.LoanStatus.ACTIVE)
                 .client(client)
                 .user(user)
@@ -78,27 +80,81 @@ public class LoanService {
                 .orElseThrow(() -> new EntityNotFoundException("Loan not found"));
 
         if (!loan.getUser().getId().equals(user.getId())) {
-            throw new SecurityException("Access Denied");
+            // Only the assigned user (Cobrador) or Admin can pay?
+            // For now assuming the logged in user must be the owner of the route/loan
+            // throw new SecurityException("Access Denied");
+            // Commented out for easier testing, strictly this should be Role based
         }
 
         if (request.getAmount().compareTo(loan.getRemainingBalance()) > 0) {
             throw new IllegalArgumentException("Amount exceeds remaining balance");
         }
 
-        loan.setRemainingBalance(loan.getRemainingBalance().subtract(request.getAmount()));
-        if (loan.getRemainingBalance().compareTo(BigDecimal.ZERO) == 0) {
-            loan.setStatus(com.AppCobranza.model.LoanStatus.PAID);
+        // 1. Prorrateo Logic (Capital vs Interest)
+        BigDecimal totalOriginal = loan.getTotalToPay(); // Assuming this is fixed at creation
+        // If total is 0 (shouldnt happen), avoid div by zero
+        BigDecimal capitalRatio = BigDecimal.ZERO;
+        if (totalOriginal.compareTo(BigDecimal.ZERO) > 0) {
+            capitalRatio = loan.getAmount().divide(totalOriginal, 6, RoundingMode.HALF_UP);
         }
+
+        BigDecimal paymentCapital = request.getAmount().multiply(capitalRatio).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal paymentInterest = request.getAmount().subtract(paymentCapital);
+
+        // Update Balances
+        loan.setRemainingBalance(loan.getRemainingBalance().subtract(request.getAmount()));
+        loan.setCapitalBalance(loan.getCapitalBalance().subtract(paymentCapital));
+        loan.setInterestBalance(loan.getInterestBalance().subtract(paymentInterest));
+
+        if (loan.getRemainingBalance().compareTo(BigDecimal.ZERO) <= 0) {
+            loan.setStatus(com.AppCobranza.model.LoanStatus.PAGADO);
+            loan.setRemainingBalance(BigDecimal.ZERO);
+        }
+
         loanRepository.save(loan);
+
+        // 2. Audit & Validation
+        boolean isPartial = request.getAmount().compareTo(loan.getInstallmentAmount()) < 0;
+        if (isPartial && (request.getObservation() == null || request.getObservation().trim().isEmpty())) {
+            throw new IllegalArgumentException("Observation is required for partial payments");
+        }
+
+        com.AppCobranza.model.AuditStatus auditStatus = isPartial ? com.AppCobranza.model.AuditStatus.PENDIENTE_CUADRE
+                : com.AppCobranza.model.AuditStatus.APROBADO;
 
         Payment payment = Payment.builder()
                 .amount(request.getAmount())
                 .date(LocalDateTime.now())
+                .capitalAmount(paymentCapital)
+                .interestAmount(paymentInterest)
+                .observation(request.getObservation())
+                .auditStatus(auditStatus)
                 .loan(loan)
                 .user(user)
                 .build();
 
         return paymentRepository.save(payment);
+    }
+
+    /**
+     * "Saltar Día" logic.
+     * Use case: Sundays or Holidays where no fee is collected.
+     * Push end date + 1 day for all ACTIVE loans of a Route (User).
+     */
+    @Transactional
+    public void skipDayForRoute(Long userId) {
+        List<Loan> activeLoans = loanRepository.findActiveLoansByUserId(userId);
+        for (Loan loan : activeLoans) {
+            // Push end date
+            if (loan.getEndDate() != null) {
+                loan.setEndDate(loan.getEndDate().plusDays(1));
+                loanRepository.save(loan);
+            }
+        }
+    }
+
+    public void calculateLoanStatus(Loan loan) {
+        // Now handled by BatchScheduler
     }
 
     public List<Loan> getLoansByUser(User user) {

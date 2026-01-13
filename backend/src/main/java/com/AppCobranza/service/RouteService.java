@@ -105,7 +105,7 @@ public class RouteService {
             if (priority1 != priority2) {
                 return Integer.compare(priority1, priority2);
             }
-            return Integer.compare(r1.getRouteOrder(), r2.getRouteOrder());
+            return Double.compare(r1.getRouteOrder(), r2.getRouteOrder());
         });
 
         return route;

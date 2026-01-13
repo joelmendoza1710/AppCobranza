@@ -30,6 +30,9 @@ public class Loan {
     private BigDecimal totalToPay;
     private BigDecimal remainingBalance;
 
+    private BigDecimal capitalBalance; // Portion of remaining balance that is capital
+    private BigDecimal interestBalance; // Portion of remaining balance that is interest
+
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
 
