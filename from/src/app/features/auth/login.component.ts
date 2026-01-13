@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { StorageService } from '../../core/services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -62,14 +63,25 @@ export class LoginComponent {
   username = '';
   password = '';
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router,
+    private storage: StorageService
+  ) {}
 
   onSubmit() {
     this.auth
       .login({ username: this.username, password: this.password })
       .subscribe({
-        next: () => this.router.navigate(['/dashboard']),
-        error: (err) => alert('Login failed'),
+        next: () => {
+          const user = this.storage.getUser();
+          if (user?.role === 'ADMIN') {
+            this.router.navigate(['/admin/dashboard']);
+          } else {
+            this.router.navigate(['/cobrador/dashboard']);
+          }
+        },
+        error: (err) => console.error('Login failed', err),
       });
   }
 }
